@@ -45,12 +45,6 @@ integer k;
 integer sub_size=2;
 integer seq_size=4;
 
-// constantly reset these to zero so the rising edge can be used to set off permutation
-always @(posedge clk, posedge start_gen) begin
-	sub_seq <= 0;
-	new_seq <= 0;
-end
-
 //output adresses in sucession if they're done being generated and have not yet been output
 always@(posedge  clk) begin
 	for (j = 0; j<N; j = j+1) begin
@@ -62,7 +56,7 @@ end
 
 // when addr_cnt reaches N, set done_output to high
 always @(posedge clk) begin
-	if (addr_cnt == N) begin
+	if (addr_cnt == N-1) begin
 		done_output<=1;
 	end
 end
@@ -81,6 +75,7 @@ always @(posedge start_gen) begin
 	seq_init[0][0:BITS_PER_ROW-1]<= 0;
 	seq_init[1][0:BITS_PER_ROW-1]<= 1;
 	sub_seq <=1;
+	new_seq <=0;
 	addr_cnt[0:BITS_PER_ROW] <= 0;
 end
 
