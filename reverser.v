@@ -85,7 +85,7 @@ always@(posedge sub_seq) begin
 	// as long as the size of the subsequence is less than half the final size
 	if (sub_size<=N/2) begin
 		// loop N/s times regardless of stage
-		for (k = 0; k<N/2; k= k+1)
+		for (k = 0; k<N/2; k= k+1) begin
 			// if k is less than half the size of the next sequence
 			if (k<sub_size) begin
 				out1[k][0:BITS_PER_ROW-1]  <= 2*seq_init[k][0:BITS_PER_ROW-1] ;
@@ -103,6 +103,7 @@ always@(posedge sub_seq) begin
 	sub_seq<=0;
 	// double the size of the sub-sequences
 	sub_size <= sub_size*2;
+	end
 end
 
 // combine out1 and out2 into next permutation
