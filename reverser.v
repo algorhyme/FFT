@@ -50,21 +50,23 @@ always@(posedge  clk) begin
 	for (j = 0; j<N; j = j+1) begin
 		if (addr_cnt == j && done_gen && !done_output) begin
 			addr[0:BITS_PER_ROW-1] <= seq_init[j][0:BITS_PER_ROW-1]; 
+			addr_cnt <= addr_cnt + 1;
 		end		
 	end	
 end
 
 // when addr_cnt reaches N, set done_output to high
 always @(posedge clk) begin
-	if (addr_cnt == N-1) begin
+	if (addr_cnt == N) begin
 		done_output<=1;
 	end
 end
 
-// add one to addr_cnt as long as the address sequence is done being generated and all addresses have not yet been output
-always @(posedge clk) begin
-	if (done_gen && !done_output) begin
-		addr_cnt[0:BITS_PER_ROW] <= addr_cnt[0:BITS_PER_ROW] + 1;
+always @(negedge new_seq) begin
+	// no matter what the length of the sequence, bit reversing the last entry leaves it unchanged
+	if (seq_init[N-1] == N-1) begin
+		done_gen <= 1;
+		addr_cnt <= 0;
 	end
 end
 
@@ -76,7 +78,6 @@ always @(posedge start_gen) begin
 	seq_init[1][0:BITS_PER_ROW-1]<= 1;
 	sub_seq <=1;
 	new_seq <=0;
-	addr_cnt[0:BITS_PER_ROW] <= 0;
 end
 
 // when the sub-sequence that generates the next permutation is done, fill the next set of sub-sequences
@@ -104,13 +105,6 @@ always@(posedge sub_seq) begin
 	sub_size <= sub_size*2;
 end
 
-// put done_gen high if the end of the permutation has been reached
-always @(posedge sub_seq) begin
-	if (sub_size == N || seq_size == N*2) begin
-		done_gen <= 1;
-	end
-end
-
 // combine out1 and out2 into next permutation
 always @(posedge new_seq) begin
 	// if the size is still less than or equal to N
@@ -131,6 +125,7 @@ always @(posedge new_seq) begin
 	new_seq <=0;
 	// double the sequence size
 	seq_size <= seq_size*2;
+	
 	end
 end
 
