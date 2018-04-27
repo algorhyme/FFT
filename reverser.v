@@ -42,8 +42,8 @@ integer j;
 integer k;
 
 // initial sequence is two long (0,1) 
-integer sub_size=2;
-integer seq_size=4;
+integer sub_size;
+integer seq_size;
 
 //output adresses in sucession if they're done being generated and have not yet been output
 always@(posedge  clk) begin
@@ -78,6 +78,8 @@ always @(posedge start_gen) begin
 	seq_init[1][0:BITS_PER_ROW-1]<= 1;
 	sub_seq <=1;
 	new_seq <=0;
+	seq_size <= 4;
+	sub_size <= 2;
 end
 
 // when the sub-sequence that generates the next permutation is done, fill the next set of sub-sequences
